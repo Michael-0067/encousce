@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "@/lib/session";
 import { getUserBalance } from "@/lib/wallet";
@@ -10,9 +9,7 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   const session = await getSession();
-  if (!session) redirect("/login");
-
-  const balance = await getUserBalance(session.user.id);
+  const balance = session ? await getUserBalance(session.user.id) : null;
 
   return (
     <div className="min-h-screen bg-enc-bg flex flex-col">
@@ -26,18 +23,34 @@ export default async function AppLayout({
           </Link>
 
           <div className="flex items-center gap-5">
-            <span className="text-enc-rose text-sm font-medium tabular-nums">
-              ♥ {balance.toLocaleString()}
-            </span>
-            <span className="text-enc-muted text-sm hidden sm:block">
-              {session.user.username}
-            </span>
-            {session.user.role === "ADMIN" && (
-              <span className="text-enc-dim text-xs border border-enc-dim px-2 py-0.5 rounded">
-                admin
-              </span>
+            {session ? (
+              <>
+                <span className="text-enc-rose text-sm font-medium tabular-nums">
+                  ♥ {balance!.toLocaleString()}
+                </span>
+                <span className="text-enc-muted text-sm hidden sm:block">
+                  {session.user.username}
+                </span>
+                {session.user.role === "ADMIN" && (
+                  <span className="text-enc-dim text-xs border border-enc-dim px-2 py-0.5 rounded">
+                    admin
+                  </span>
+                )}
+                <LogoutButton />
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="text-enc-muted hover:text-enc-text text-sm transition-colors">
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  className="bg-enc-plum hover:bg-enc-plum-light text-enc-cream text-sm font-medium px-4 py-1.5 rounded-lg transition-colors"
+                >
+                  Register
+                </Link>
+              </>
             )}
-            <LogoutButton />
           </div>
         </div>
       </header>
