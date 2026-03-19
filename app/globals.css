@@ -1,3 +1,61 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-enc-bg text-enc-text font-sans antialiased;
+  }
+
+  ::selection {
+    @apply bg-enc-plum text-enc-cream;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-enc-bg;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-enc-dim rounded-full;
+  }
+}
+
+@layer components {
+  .enc-input {
+    @apply w-full bg-enc-bg border border-enc-border rounded-lg px-4 py-3
+           text-enc-text placeholder-enc-muted
+           focus:outline-none focus:border-enc-plum focus:ring-1 focus:ring-enc-plum
+           transition-colors duration-200;
+  }
+
+  .enc-btn-primary {
+    @apply w-full bg-enc-plum hover:bg-enc-plum-light text-enc-cream
+           font-sans font-medium py-3 px-6 rounded-lg
+           transition-colors duration-200
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .enc-btn-ghost {
+    @apply text-enc-muted hover:text-enc-text transition-colors duration-200 text-sm;
+  }
+
+  .enc-card {
+    @apply bg-enc-surface border border-enc-border rounded-xl p-8;
+  }
+
+  .enc-label {
+    @apply block text-enc-cream-muted text-sm font-medium mb-2;
+  }
+
+  .enc-error {
+    @apply text-enc-rose text-sm mt-2;
+  }
+
+  .enc-link {
+    @apply text-enc-rose hover:text-enc-rose-muted transition-colors duration-200;
+  }
+}

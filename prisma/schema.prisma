@@ -1,0 +1,158 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  username     String   @unique
+  passwordHash String
+  role         String   @default("USER")
+  status       String   @default("ACTIVE")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sessions       Session[]
+  passwordResets PasswordReset[]
+  encounters     Encounter[]
+  ledger         LedgerEntry[]
+  purchases      Purchase[]
+  scenes         Scene[]
+  characters     Character[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PasswordReset {
+  id        String    @id @default(cuid())
+  userId    String
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Scene {
+  id            String   @id @default(cuid())
+  title         String
+  coverImage    String?
+  imagePrompt   String?
+  setting       String
+  coreSituation String
+  emotionalHook String
+  openingMoment String
+  toneTags      String   @default("[]")
+  allowedType1  String
+  allowedType2  String?
+  status        String   @default("DRAFT")
+  tier          String   @default("COMMUNITY")
+  authorId      String
+  clickCount    Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  author     User        @relation(fields: [authorId], references: [id])
+  encounters Encounter[]
+}
+
+model Character {
+  id                 String   @id @default(cuid())
+  name               String
+  portraitImage      String?
+  imagePrompt        String?
+  primaryType        String
+  secondaryType      String?
+  compatibleSettings String   @default("[]")
+  corePersonality    String
+  interactionStyle   String
+  dialogueTone       String
+  behaviorRules      String
+  status             String   @default("DRAFT")
+  tier               String   @default("COMMUNITY")
+  authorId           String
+  selectionCount     Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  author     User        @relation(fields: [authorId], references: [id])
+  encounters Encounter[]
+}
+
+model Encounter {
+  id             String   @id @default(cuid())
+  userId         String
+  sceneId        String
+  characterId    String
+  status         String   @default("ACTIVE")
+  lastAccessedAt DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id])
+  scene     Scene     @relation(fields: [sceneId], references: [id])
+  character Character @relation(fields: [characterId], references: [id])
+  messages  Message[]
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  encounterId String
+  role        String
+  content     String
+  heartCost   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  encounter Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+}
+
+model LedgerEntry {
+  id           String   @id @default(cuid())
+  userId       String
+  type         String
+  amount       Int
+  balanceAfter Int
+  referenceId  String?
+  note         String?
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Purchase {
+  id              String    @id @default(cuid())
+  userId          String
+  heartsAmount    Int
+  amountUsdCents  Int
+  stripePaymentId String    @unique
+  status          String    @default("PENDING")
+  refundId        String?
+  refundedAt      DateTime?
+  createdAt       DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model EngagementEvent {
+  id          String   @id @default(cuid())
+  userId      String?
+  eventType   String
+  sceneId     String?
+  characterId String?
+  encounterId String?
+  createdAt   DateTime @default(now())
+}
