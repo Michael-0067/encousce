@@ -8,7 +8,8 @@ async function getInitialScenes() {
     include: { author: { select: { username: true } } },
   });
 
-  const parse = (s: { toneTags: string; [key: string]: unknown }) => ({
+  type SceneRow = typeof scenes[number];
+  const parse = (s: SceneRow) => ({
     ...s,
     toneTags: (() => { try { return JSON.parse(s.toneTags); } catch { return []; } })(),
   });
