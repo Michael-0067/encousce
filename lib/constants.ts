@@ -35,4 +35,4 @@ export const LEAD_TYPE_LABELS: Record<string, string> = {
   AUTHORITATIVE: "Authoritative",
 };
 
-export const HEARTS_PER_MESSAGE = 10;
+export const HEARTS_PER_MESSAGE = 1;

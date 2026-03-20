@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { HEARTS_PER_MESSAGE } from "@/lib/constants";
 
 interface Message {
@@ -29,6 +30,7 @@ export default function ChatWindow({
   onBalanceChange,
   onRequestReset,
 }: Props) {
+  const router = useRouter();
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -99,6 +101,7 @@ export default function ChatWindow({
 
     setBalance(data.balance);
     onBalanceChange(data.balance);
+    router.refresh();
   }
 
   return (
