@@ -31,12 +31,12 @@ export default async function AppLayout({
                 <Link href="/create/character" className="text-enc-muted hover:text-enc-text text-sm transition-colors hidden sm:block">
                   + Character
                 </Link>
-                <span className="text-enc-rose text-sm font-medium tabular-nums">
-                  ♥ {balance!.toLocaleString()}
-                </span>
-                <span className="text-enc-muted text-sm hidden sm:block">
+                <Link href="/account/hearts" className="text-enc-rose text-sm font-medium tabular-nums hover:text-enc-rose/80 transition-colors">
+                  ♥ {Math.floor(balance!).toLocaleString()}
+                </Link>
+                <Link href="/account" className="text-enc-muted hover:text-enc-text text-sm hidden sm:block transition-colors">
                   {session.user.username}
-                </span>
+                </Link>
                 {session.user.role === "ADMIN" && (
                   <span className="text-enc-dim text-xs border border-enc-dim px-2 py-0.5 rounded">
                     admin

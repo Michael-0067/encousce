@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
-import { getUserBalance } from "@/lib/wallet";
+import { getSpendableBalance } from "@/lib/wallet";
 import { openai, buildSystemPrompt } from "@/lib/openai";
 import { HEARTS_PER_MESSAGE } from "@/lib/constants";
 
@@ -37,7 +37,7 @@ export async function POST(
   const isAdmin = session.user.role === "ADMIN";
 
   // Check hearts balance
-  const balance = await getUserBalance(session.user.id);
+  const balance = await getSpendableBalance(session.user.id);
   if (!isAdmin && balance < HEARTS_PER_MESSAGE) {
     return NextResponse.json(
       { error: "INSUFFICIENT_HEARTS", balance },

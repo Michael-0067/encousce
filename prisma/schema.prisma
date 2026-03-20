@@ -124,8 +124,8 @@ model LedgerEntry {
   id           String   @id @default(cuid())
   userId       String
   type         String
-  amount       Int
-  balanceAfter Int
+  amount       Float
+  balanceAfter Float
   referenceId  String?
   note         String?
   createdAt    DateTime @default(now())
