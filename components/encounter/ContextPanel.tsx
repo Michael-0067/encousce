@@ -17,9 +17,10 @@ interface Props {
   };
   isAdmin: boolean;
   onReset: () => void;
+  onDelete: () => void;
 }
 
-export default function ContextPanel({ scene, character, isAdmin, onReset }: Props) {
+export default function ContextPanel({ scene, character, isAdmin, onReset, onDelete }: Props) {
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       {/* Scene */}
@@ -72,6 +73,12 @@ export default function ContextPanel({ scene, character, isAdmin, onReset }: Pro
           className="w-full text-enc-muted hover:text-enc-rose border border-enc-border hover:border-enc-rose/50 text-xs py-2 rounded-lg transition-colors"
         >
           Reset encounter
+        </button>
+        <button
+          onClick={onDelete}
+          className="w-full text-enc-dim hover:text-enc-rose/70 border border-enc-border/50 hover:border-enc-rose/30 text-xs py-2 rounded-lg transition-colors"
+        >
+          Delete encounter
         </button>
         {isAdmin && (
           <p className="text-enc-dim text-[10px] text-center">Admin — hearts bypassed</p>

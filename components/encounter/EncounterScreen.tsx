@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import EncounterSidebar from "./EncounterSidebar";
 import ChatWindow from "./ChatWindow";
 import ContextPanel from "./ContextPanel";
 import ResetModal from "./ResetModal";
+import DeleteModal from "./DeleteModal";
 
 interface EncounterData {
   id: string;
@@ -44,22 +46,14 @@ interface Props {
 }
 
 export default function EncounterScreen({ encounter, encounters, balance: initialBalance, isAdmin }: Props) {
+  const router = useRouter();
   const [balance, setBalance] = useState(initialBalance);
   const [showReset, setShowReset] = useState(false);
   const [resetting, setResetting] = useState(false);
-  const [resetKey, setResetKey] = useState(0); // force ChatWindow remount on reset
+  const [resetKey, setResetKey] = useState(0);
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
-  async function handleReset() {
-    setResetting(true);
-    const res = await fetch(`/api/encounters/${encounter.id}/reset`, { method: "POST" });
-    setResetting(false);
-    if (res.ok) {
-      setShowReset(false);
-      setResetKey((k) => k + 1); // remount ChatWindow with fresh opening message
-    }
-  }
-
-  // After reset, re-fetch initial messages
   const [initialMessages, setInitialMessages] = useState(encounter.messages);
 
   async function handleResetConfirm() {
@@ -67,11 +61,20 @@ export default function EncounterScreen({ encounter, encounters, balance: initia
     const res = await fetch(`/api/encounters/${encounter.id}/reset`, { method: "POST" });
     setResetting(false);
     if (res.ok) {
-      // Re-fetch messages
       const data = await fetch(`/api/encounters/${encounter.id}`).then((r) => r.json());
       setInitialMessages(data.encounter.messages);
       setResetKey((k) => k + 1);
       setShowReset(false);
+    }
+  }
+
+  async function handleDeleteConfirm() {
+    setDeleting(true);
+    const res = await fetch(`/api/encounters/${encounter.id}`, { method: "DELETE" });
+    setDeleting(false);
+    if (res.ok) {
+      // /encounters redirects to most recent remaining encounter, or shows empty state
+      router.push("/encounters");
     }
   }
 
@@ -104,6 +107,7 @@ export default function EncounterScreen({ encounter, encounters, balance: initia
             character={encounter.character}
             isAdmin={isAdmin}
             onReset={() => setShowReset(true)}
+            onDelete={() => setShowDelete(true)}
           />
         </div>
       </div>
@@ -114,6 +118,16 @@ export default function EncounterScreen({ encounter, encounters, balance: initia
           onConfirm={handleResetConfirm}
           onCancel={() => setShowReset(false)}
           loading={resetting}
+        />
+      )}
+
+      {showDelete && (
+        <DeleteModal
+          sceneName={encounter.scene.title}
+          characterName={encounter.character.name}
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setShowDelete(false)}
+          loading={deleting}
         />
       )}
     </>
