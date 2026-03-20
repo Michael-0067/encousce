@@ -1,6 +1,6 @@
 import { redirect, notFound } from "next/navigation";
 import { getSession } from "@/lib/session";
-import { getUserBalance } from "@/lib/wallet";
+import { getSpendableBalance } from "@/lib/wallet";
 import { db } from "@/lib/prisma";
 import EncounterScreen from "@/components/encounter/EncounterScreen";
 
@@ -39,7 +39,7 @@ export default async function EncounterPage({
     take: 30,
   });
 
-  const balance = await getUserBalance(session.user.id);
+  const balance = await getSpendableBalance(session.user.id);
   const isAdmin = session.user.role === "ADMIN";
 
   // Serialize dates for client
