@@ -38,10 +38,15 @@ export default function ChatWindow({
   const [error, setError] = useState("");
   const [insufficientHearts, setInsufficientHearts] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    if (!sending) inputRef.current?.focus();
+  }, [sending]);
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
@@ -169,6 +174,7 @@ export default function ChatWindow({
       <div className="shrink-0 border-t border-enc-border px-4 py-4">
         <form onSubmit={handleSend} className="flex gap-3 items-end">
           <textarea
+            ref={inputRef}
             className="flex-1 bg-enc-surface border border-enc-border rounded-xl px-4 py-3 text-enc-text placeholder-enc-muted text-sm resize-none focus:outline-none focus:border-enc-plum focus:ring-1 focus:ring-enc-plum transition-colors"
             placeholder={`Say something…`}
             value={input}
