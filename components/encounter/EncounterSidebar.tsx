@@ -27,7 +27,13 @@ function timeAgo(date: string | Date): string {
 export default function EncounterSidebar({ encounters, currentId }: Props) {
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b border-enc-border shrink-0">
+      <div className="p-4 border-b border-enc-border shrink-0 space-y-3">
+        <Link
+          href="/browse"
+          className="block w-full text-center bg-enc-plum hover:bg-enc-plum-light text-enc-cream text-xs font-medium px-3 py-2 rounded-lg transition-colors"
+        >
+          + New Encounter
+        </Link>
         <p className="text-enc-dim text-xs uppercase tracking-wide font-medium">Your Encounters</p>
       </div>
 
@@ -55,14 +61,6 @@ export default function EncounterSidebar({ encounters, currentId }: Props) {
         )}
       </div>
 
-      <div className="p-4 border-t border-enc-border shrink-0">
-        <Link
-          href="/browse"
-          className="block text-center text-enc-muted hover:text-enc-cream text-xs transition-colors"
-        >
-          ← Browse scenes
-        </Link>
-      </div>
     </div>
   );
 }

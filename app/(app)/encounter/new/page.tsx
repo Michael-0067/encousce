@@ -21,20 +21,8 @@ export default async function NewEncounterPage({
 
   if (!scene || !character) redirect("/browse");
 
-  // Resume existing active encounter if one exists
-  const existing = await db.encounter.findFirst({
-    where: { userId: session.user.id, sceneId, characterId, status: "ACTIVE" },
-  });
-
-  if (existing) {
-    await db.encounter.update({
-      where: { id: existing.id },
-      data: { lastAccessedAt: new Date() },
-    });
-    redirect(`/encounter/${existing.id}`);
-  }
-
-  // Create new encounter
+  // Always create a new encounter — each selection is its own instance
+  // (existing encounters of the same pairing remain accessible via the sidebar)
   const encounter = await db.encounter.create({
     data: { userId: session.user.id, sceneId, characterId, status: "ACTIVE" },
   });
