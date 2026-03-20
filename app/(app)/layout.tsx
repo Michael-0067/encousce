@@ -25,6 +25,9 @@ export default async function AppLayout({
           <div className="flex items-center gap-5">
             {session ? (
               <>
+                <Link href="/encounters" className="text-enc-muted hover:text-enc-text text-sm transition-colors hidden sm:block">
+                  Encounters
+                </Link>
                 <Link href="/create/scene" className="text-enc-muted hover:text-enc-text text-sm transition-colors hidden sm:block">
                   + Scene
                 </Link>

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 const AUTH_ONLY_PATHS = ["/login", "/register"];
 
 // Only these paths require a session
-const PROTECTED_PATHS = ["/encounter", "/create", "/account"];
+const PROTECTED_PATHS = ["/encounter", "/encounters", "/create", "/account"];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
