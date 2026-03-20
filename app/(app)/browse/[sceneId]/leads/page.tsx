@@ -17,10 +17,7 @@ async function getCompatibleCharacters(scene: { allowedType1: string; allowedTyp
   const characters = await db.character.findMany({
     where: {
       status: "PUBLISHED",
-      OR: [
-        { primaryType: { in: types } },
-        { secondaryType: { in: types } },
-      ],
+      primaryType: { in: types },
     },
     orderBy: { selectionCount: "desc" },
     include: { author: { select: { username: true } } },
