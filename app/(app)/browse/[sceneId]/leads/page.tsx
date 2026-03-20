@@ -26,7 +26,8 @@ async function getCompatibleCharacters(scene: { allowedType1: string; allowedTyp
     include: { author: { select: { username: true } } },
   });
 
-  const parse = (c: { compatibleSettings: string; [key: string]: unknown }) => ({
+  type CharacterRow = typeof characters[number];
+  const parse = (c: CharacterRow) => ({
     ...c,
     compatibleSettings: (() => { try { return JSON.parse(c.compatibleSettings); } catch { return []; } })(),
   });
