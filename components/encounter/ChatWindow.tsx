@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { HEARTS_PER_MESSAGE } from "@/lib/constants";
 
 interface Message {
   id: string;
@@ -51,11 +50,6 @@ export default function ChatWindow({
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
     if (!input.trim() || sending) return;
-
-    if (!isAdmin && balance < HEARTS_PER_MESSAGE) {
-      setInsufficientHearts(true);
-      return;
-    }
 
     setError("");
     setInsufficientHearts(false);
@@ -191,12 +185,9 @@ export default function ChatWindow({
           <button
             type="submit"
             disabled={sending || !input.trim()}
-            className="shrink-0 bg-enc-plum hover:bg-enc-plum-light disabled:opacity-40 disabled:cursor-not-allowed text-enc-cream px-4 py-3 rounded-xl transition-colors flex flex-col items-center gap-0.5"
+            className="shrink-0 bg-enc-plum hover:bg-enc-plum-light disabled:opacity-40 disabled:cursor-not-allowed text-enc-cream px-4 py-3 rounded-xl transition-colors"
           >
             <span className="text-sm">→</span>
-            {!isAdmin && (
-              <span className="text-[9px] text-enc-cream/70">♥ {HEARTS_PER_MESSAGE}</span>
-            )}
           </button>
         </form>
         {!isAdmin && (

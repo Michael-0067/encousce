@@ -35,4 +35,4 @@ export const LEAD_TYPE_LABELS: Record<string, string> = {
   AUTHORITATIVE: "Authoritative",
 };
 
-export const HEARTS_PER_MESSAGE = 1;
+export const CHARS_PER_HEART = 1000; // 1000 characters = 1 Heart = $0.01

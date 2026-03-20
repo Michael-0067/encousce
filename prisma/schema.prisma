@@ -114,7 +114,7 @@ model Message {
   encounterId String
   role        String
   content     String
-  heartCost   Int      @default(0)
+  heartCost   Float    @default(0)
   createdAt   DateTime @default(now())
 
   encounter Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)

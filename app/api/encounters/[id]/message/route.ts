@@ -4,7 +4,7 @@ import { db } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { getUserBalance } from "@/lib/wallet";
 import { openai, buildSystemPrompt } from "@/lib/openai";
-import { HEARTS_PER_MESSAGE } from "@/lib/constants";
+import { CHARS_PER_HEART } from "@/lib/constants";
 
 export async function POST(
   req: NextRequest,
@@ -36,14 +36,17 @@ export async function POST(
 
   const isAdmin = session.user.role === "ADMIN";
 
+  // Character-based cost: characters / CHARS_PER_HEART
+  const charCount = content.trim().length;
+  const cost = new Prisma.Decimal(charCount).div(new Prisma.Decimal(CHARS_PER_HEART));
+
   // Precise Decimal balance — source of truth
   const preciseBalance = await getUserBalance(session.user.id);
-  // Spendable = floor of precise balance (whole hearts only)
-  const spendable = preciseBalance.floor().toNumber();
 
-  if (!isAdmin && spendable < HEARTS_PER_MESSAGE) {
+  // Spend check against precise balance (not spendable floor)
+  if (!isAdmin && preciseBalance.lessThan(cost)) {
     return NextResponse.json(
-      { error: "INSUFFICIENT_HEARTS", balance: spendable },
+      { error: "INSUFFICIENT_HEARTS", balance: preciseBalance.floor().toNumber() },
       { status: 402 }
     );
   }
@@ -54,7 +57,7 @@ export async function POST(
       encounterId,
       role: "USER",
       content: content.trim(),
-      heartCost: isAdmin ? 0 : HEARTS_PER_MESSAGE,
+      heartCost: isAdmin ? 0 : cost.toNumber(),
     },
   });
 
@@ -80,17 +83,22 @@ export async function POST(
     return NextResponse.json({ error: "AI service unavailable. Please try again." }, { status: 503 });
   }
 
-  // Store AI response
+  // Store AI response (no charge)
   const aiMessage = await db.message.create({
     data: { encounterId, role: "ASSISTANT", content: aiContent, heartCost: 0 },
   });
 
-  // Deduct hearts via ledger (Decimal arithmetic — no float ops on balance)
-  let newSpendable = spendable;
+  // Deduct from ledger using Decimal arithmetic
+  let newSpendable = preciseBalance.floor().toNumber();
   if (!isAdmin) {
-    const cost = new Prisma.Decimal(HEARTS_PER_MESSAGE);
     const newPrecise = preciseBalance.sub(cost);
     newSpendable = newPrecise.floor().toNumber();
+
+    // Temporary spend logging for validation
+    console.log(
+      `[spend] chars=${charCount} cost=${cost.toFixed(6)} ` +
+      `prev=${preciseBalance.toFixed(6)} new=${newPrecise.toFixed(6)}`
+    );
 
     await db.ledgerEntry.create({
       data: {
@@ -99,7 +107,7 @@ export async function POST(
         amount: cost.negated(),
         balanceAfter: newPrecise,
         referenceId: encounterId,
-        note: `Message in encounter ${encounterId}`,
+        note: `${charCount} chars`,
       },
     });
   }
