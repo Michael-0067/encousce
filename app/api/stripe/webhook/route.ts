@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { Prisma } from "@prisma/client";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/lib/prisma";
 
@@ -40,14 +41,17 @@ export async function POST(req: NextRequest) {
     });
     if (existing) return NextResponse.json({ ok: true });
 
-    // Atomic: create purchase record + ledger entry in one transaction
+    // Atomic: create purchase record + ledger entry
     await db.$transaction(async (tx) => {
       const current = await tx.ledgerEntry.aggregate({
         where: { userId },
         _sum: { amount: true },
       });
-      const currentBalance = current._sum.amount ?? 0;
-      const newBalance = currentBalance + heartsQty;
+
+      // Decimal arithmetic — no JS float ops on balance
+      const currentBalance = current._sum.amount ?? new Prisma.Decimal(0);
+      const credit = new Prisma.Decimal(heartsQty);
+      const newBalance = currentBalance.add(credit);
 
       await tx.purchase.create({
         data: {
@@ -63,7 +67,7 @@ export async function POST(req: NextRequest) {
         data: {
           userId,
           type: "PURCHASE",
-          amount: heartsQty,
+          amount: credit,
           balanceAfter: newBalance,
           referenceId: session.id,
           note: `Purchased ${heartsQty.toLocaleString()} Hearts`,

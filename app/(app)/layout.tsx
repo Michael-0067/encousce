@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSession } from "@/lib/session";
-import { getUserBalance } from "@/lib/wallet";
+import { getSpendableBalance } from "@/lib/wallet";
 import LogoutButton from "./LogoutButton";
 
 export default async function AppLayout({
@@ -9,7 +9,7 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   const session = await getSession();
-  const balance = session ? await getUserBalance(session.user.id) : null;
+  const balance = session ? await getSpendableBalance(session.user.id) : null;
 
   return (
     <div className="min-h-screen bg-enc-bg flex flex-col">
@@ -32,7 +32,7 @@ export default async function AppLayout({
                   + Character
                 </Link>
                 <Link href="/account/hearts" className="text-enc-rose text-sm font-medium tabular-nums hover:text-enc-rose/80 transition-colors">
-                  ♥ {Math.floor(balance!).toLocaleString()}
+                  ♥ {balance!.toLocaleString()}
                 </Link>
                 <Link href="/account" className="text-enc-muted hover:text-enc-text text-sm hidden sm:block transition-colors">
                   {session.user.username}

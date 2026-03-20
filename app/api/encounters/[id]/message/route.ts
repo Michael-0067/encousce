@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { db } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
-import { getSpendableBalance } from "@/lib/wallet";
+import { getUserBalance } from "@/lib/wallet";
 import { openai, buildSystemPrompt } from "@/lib/openai";
 import { HEARTS_PER_MESSAGE } from "@/lib/constants";
 
@@ -33,14 +34,16 @@ export async function POST(
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
 
-  // Admin bypass — check role
   const isAdmin = session.user.role === "ADMIN";
 
-  // Check hearts balance
-  const balance = await getSpendableBalance(session.user.id);
-  if (!isAdmin && balance < HEARTS_PER_MESSAGE) {
+  // Precise Decimal balance — source of truth
+  const preciseBalance = await getUserBalance(session.user.id);
+  // Spendable = floor of precise balance (whole hearts only)
+  const spendable = preciseBalance.floor().toNumber();
+
+  if (!isAdmin && spendable < HEARTS_PER_MESSAGE) {
     return NextResponse.json(
-      { error: "INSUFFICIENT_HEARTS", balance },
+      { error: "INSUFFICIENT_HEARTS", balance: spendable },
       { status: 402 }
     );
   }
@@ -73,7 +76,6 @@ export async function POST(
     });
     aiContent = completion.choices[0]?.message?.content?.trim() || "…";
   } catch {
-    // If OpenAI fails, roll back user message
     await db.message.delete({ where: { id: userMessage.id } });
     return NextResponse.json({ error: "AI service unavailable. Please try again." }, { status: 503 });
   }
@@ -83,16 +85,19 @@ export async function POST(
     data: { encounterId, role: "ASSISTANT", content: aiContent, heartCost: 0 },
   });
 
-  // Deduct hearts (skip for admin)
-  let newBalance = balance;
+  // Deduct hearts via ledger (Decimal arithmetic — no float ops on balance)
+  let newSpendable = spendable;
   if (!isAdmin) {
-    newBalance = balance - HEARTS_PER_MESSAGE;
+    const cost = new Prisma.Decimal(HEARTS_PER_MESSAGE);
+    const newPrecise = preciseBalance.sub(cost);
+    newSpendable = newPrecise.floor().toNumber();
+
     await db.ledgerEntry.create({
       data: {
         userId: session.user.id,
         type: "MESSAGE_SPEND",
-        amount: -HEARTS_PER_MESSAGE,
-        balanceAfter: newBalance,
+        amount: cost.negated(),
+        balanceAfter: newPrecise,
         referenceId: encounterId,
         note: `Message in encounter ${encounterId}`,
       },
@@ -119,6 +124,6 @@ export async function POST(
   return NextResponse.json({
     userMessage,
     aiMessage,
-    balance: newBalance,
+    balance: newSpendable,
   });
 }

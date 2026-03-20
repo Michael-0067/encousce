@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
-import { getUserBalance, getSpendableBalance, formatPreciseBalance } from "@/lib/wallet";
+import { getUserBalance, formatPreciseBalance } from "@/lib/wallet";
 import { db } from "@/lib/prisma";
 
 const TYPE_LABELS: Record<string, string> = {
@@ -31,7 +31,8 @@ export default async function AccountPage() {
     getRecentTransactions(session.user.id),
   ]);
 
-  const spendable = Math.floor(preciseBalance);
+  // Spendable = floor of precise Decimal balance
+  const spendable = preciseBalance.floor().toNumber();
   const user = session.user;
 
   return (
@@ -53,13 +54,18 @@ export default async function AccountPage() {
           <div className="flex justify-between text-sm">
             <span className="text-enc-muted">Member since</span>
             <span className="text-enc-cream">
-              {new Date(user.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+              {new Date(user.createdAt).toLocaleDateString("en-US", {
+                month: "long",
+                year: "numeric",
+              })}
             </span>
           </div>
           {user.role === "ADMIN" && (
             <div className="flex justify-between text-sm">
               <span className="text-enc-muted">Role</span>
-              <span className="text-enc-dim border border-enc-dim px-2 py-0.5 rounded text-xs">admin</span>
+              <span className="text-enc-dim border border-enc-dim px-2 py-0.5 rounded text-xs">
+                admin
+              </span>
             </div>
           )}
         </div>
@@ -76,7 +82,9 @@ export default async function AccountPage() {
             <div className="text-enc-dim text-xs">Spendable Hearts</div>
           </div>
           <div className="text-right">
-            <div className="text-enc-muted font-mono text-sm">{formatPreciseBalance(preciseBalance)}</div>
+            <div className="text-enc-muted font-mono text-sm">
+              {formatPreciseBalance(preciseBalance)}
+            </div>
             <div className="text-enc-dim text-xs mt-0.5">Precise balance</div>
           </div>
         </div>
@@ -99,42 +107,51 @@ export default async function AccountPage() {
       </div>
 
       {/* Transaction history */}
-      {transactions.length > 0 && (
+      {transactions.length > 0 ? (
         <div className="enc-card">
-          <div className="text-enc-muted text-xs mb-4 uppercase tracking-wider">Recent Transactions</div>
+          <div className="text-enc-muted text-xs mb-4 uppercase tracking-wider">
+            Recent Transactions
+          </div>
           <div className="divide-y divide-enc-border">
-            {transactions.map((entry) => (
-              <div key={entry.id} className="flex items-center justify-between py-3 text-sm">
-                <div className="min-w-0">
-                  <span className="text-enc-muted">
-                    {TYPE_LABELS[entry.type] ?? entry.type}
-                  </span>
-                  {entry.note && (
-                    <span className="text-enc-dim text-xs ml-2 truncate">{entry.note}</span>
-                  )}
+            {transactions.map((entry) => {
+              const amt = entry.amount.toNumber();
+              const isCredit = amt >= 0;
+              const display = Number.isInteger(amt)
+                ? Math.abs(amt).toLocaleString()
+                : entry.amount.abs().toFixed(3);
+
+              return (
+                <div
+                  key={entry.id}
+                  className="flex items-center justify-between py-3 text-sm"
+                >
+                  <div className="min-w-0">
+                    <span className="text-enc-muted">
+                      {TYPE_LABELS[entry.type] ?? entry.type}
+                    </span>
+                    {entry.note && (
+                      <span className="text-enc-dim text-xs ml-2 truncate">
+                        {entry.note}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-4 shrink-0">
+                    <span className={isCredit ? "text-enc-rose font-medium" : "text-enc-dim"}>
+                      {isCredit ? "+" : "−"}{display} ♥
+                    </span>
+                    <span className="text-enc-dim text-xs w-20 text-right">
+                      {new Date(entry.createdAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-4 shrink-0">
-                  <span className={entry.amount >= 0 ? "text-enc-rose font-medium" : "text-enc-dim"}>
-                    {entry.amount >= 0 ? "+" : ""}
-                    {Number(entry.amount) % 1 === 0
-                      ? entry.amount.toLocaleString()
-                      : entry.amount.toFixed(3)}{" "}
-                    ♥
-                  </span>
-                  <span className="text-enc-dim text-xs w-24 text-right">
-                    {new Date(entry.createdAt).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
-      )}
-
-      {transactions.length === 0 && (
+      ) : (
         <div className="enc-card text-center py-8">
           <p className="text-enc-muted text-sm">No transactions yet.</p>
           <Link href="/account/hearts" className="enc-link text-sm mt-2 inline-block">
