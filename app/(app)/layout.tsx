@@ -25,6 +25,12 @@ export default async function AppLayout({
           <div className="flex items-center gap-5">
             {session ? (
               <>
+                <Link href="/create/scene" className="text-enc-muted hover:text-enc-text text-sm transition-colors hidden sm:block">
+                  + Scene
+                </Link>
+                <Link href="/create/character" className="text-enc-muted hover:text-enc-text text-sm transition-colors hidden sm:block">
+                  + Character
+                </Link>
                 <span className="text-enc-rose text-sm font-medium tabular-nums">
                   ♥ {balance!.toLocaleString()}
                 </span>
