@@ -86,6 +86,11 @@ export default function AdminCharacterEditForm({ character }: { character: Chara
       </Section>
 
       <Section title="Section A — Visual">
+        <Field label="Setting">
+          <select value={form.setting} onChange={(e) => set("setting", e.target.value)} className={inputCls}>
+            {SETTINGS.map((s) => <option key={s} value={s}>{SETTING_LABELS[s]}</option>)}
+          </select>
+        </Field>
         <div className="grid grid-cols-2 gap-4">
           <Field label="Visual Sex">
             <select value={form.visualSex} onChange={(e) => set("visualSex", e.target.value)} className={inputCls}>
@@ -191,11 +196,6 @@ export default function AdminCharacterEditForm({ character }: { character: Chara
         </Field>
         <Field label="Portrait Image URL / Data URL">
           <textarea value={form.portraitImage} onChange={(e) => set("portraitImage", e.target.value)} rows={2} className={textareaCls} placeholder="https://... or data:image/png;base64,..." />
-        </Field>
-        <Field label="Setting">
-          <select value={form.setting} onChange={(e) => set("setting", e.target.value)} className={inputCls}>
-            {SETTINGS.map((s) => <option key={s} value={s}>{SETTING_LABELS[s]}</option>)}
-          </select>
         </Field>
       </Section>
 
