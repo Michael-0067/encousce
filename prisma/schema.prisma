@@ -50,23 +50,44 @@ model PasswordReset {
 }
 
 model Scene {
-  id            String   @id @default(cuid())
-  title         String
-  coverImage    String?
-  imagePrompt   String?
-  setting       String
-  coreSituation String
-  emotionalHook String
-  openingMoment String
-  toneTags      String   @default("[]")
-  allowedType1  String
-  allowedType2  String?
-  status        String   @default("DRAFT")
-  tier          String   @default("COMMUNITY")
-  authorId      String
-  clickCount    Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  authorId            String
+
+  // Section A — Environment
+  title               String
+  setting             String
+  subLocation         String   @default("")
+  timeOfDay           String   @default("Evening")
+  lighting            String   @default("Warm ambient")
+  atmosphere          String   @default("Intimate")
+  environmentDetails  String?
+
+  // Section B — Situation
+  coreSituation       String
+  relationshipDynamic String   @default("Strangers")
+  leadIntent          String   @default("Curious about the user")
+  openingMoment       String
+  emotionalTone       String   @default("Controlled tension")
+  emotionalHook       String
+  encounterGoal       String   @default("Build quiet tension")
+
+  // Character matching
+  allowedType1        String
+  allowedType2        String?
+
+  // Generated content
+  generatedPrompt     String?
+  imagePrompt         String?
+  teaserText          String?
+  coverImage          String?
+
+  // Admin / system
+  toneTags            String   @default("[]")
+  status              String   @default("DRAFT")
+  tier                String   @default("COMMUNITY")
+  clickCount          Int      @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   author      User            @relation(fields: [authorId], references: [id])
   encounters  Encounter[]

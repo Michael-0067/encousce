@@ -154,6 +154,106 @@ export const EMOTIONAL_STARTING_STATES = [
   "Curious and attentive",
 ] as const;
 
+// ── Scene creator dropdowns ──────────────────────────────────────────────────
+
+export const SUB_LOCATIONS: Record<string, string[]> = {
+  MODERN: [
+    "Luxury Hotel Suite",
+    "Private Residence",
+    "Executive Office",
+    "Fine Dining Restaurant",
+    "Bar / Lounge",
+    "Airport / Transit Space",
+  ],
+  HISTORICAL: [
+    "Manor Room",
+    "Tavern / Inn",
+    "Ballroom",
+    "Study / Private Office",
+    "Carriage / Cabin",
+    "Garden / Courtyard",
+  ],
+  FANTASY: [
+    "Castle Chamber",
+    "Throne Room",
+    "Tavern / Hall",
+    "Forest Clearing",
+    "War Tent",
+    "Magical Study",
+  ],
+};
+
+export const TIME_OF_DAY = [
+  "Morning",
+  "Afternoon",
+  "Evening",
+  "Night",
+  "Late Night",
+] as const;
+
+export const LIGHTING = [
+  "Soft natural light",
+  "Warm ambient",
+  "Dim / low-lit",
+  "Bright / clean",
+  "Candlelit",
+  "Golden hour",
+  "Neon / artificial",
+] as const;
+
+export const ATMOSPHERE = [
+  "Calm",
+  "Intimate",
+  "Tense",
+  "Quiet",
+  "Lively",
+  "Luxurious",
+  "Isolated",
+  "Charged",
+] as const;
+
+export const RELATIONSHIP_DYNAMICS = [
+  "Professional equals",
+  "Lead holds authority",
+  "User holds authority",
+  "Strangers",
+  "Distant acquaintances",
+  "Rivals",
+  "Forced proximity",
+  "Returning connection",
+] as const;
+
+export const LEAD_INTENTS = [
+  "Wanted to see the user",
+  "Curious about the user",
+  "Testing the user",
+  "Needed privacy",
+  "Reluctant but present",
+  "Drawn in despite themselves",
+  "Has something to say",
+] as const;
+
+export const EMOTIONAL_TONES = [
+  "Controlled tension",
+  "Quiet intimacy",
+  "Charged and uncertain",
+  "Playful tension",
+  "Slow-burn curiosity",
+  "Guarded restraint",
+  "Immediate pull",
+] as const;
+
+export const ENCOUNTER_GOALS = [
+  "Build quiet tension",
+  "Create immediate chemistry",
+  "Slow emotional pull",
+  "Test boundaries",
+  "Develop trust",
+  "Rekindle something",
+  "Keep things controlled but charged",
+] as const;
+
 // Hearts economy
 export const CHARS_PER_HEART = 1000; // 1000 characters = 1 Heart = $0.01
 export const CHARACTER_GENERATION_COST = 5; // Hearts to generate a character
+export const SCENE_GENERATION_COST = 5; // Hearts to generate a scene

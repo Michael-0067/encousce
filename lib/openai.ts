@@ -9,11 +9,11 @@ export function buildSystemPrompt(
     setting: string;
     coreSituation: string;
     openingMoment: string;
+    generatedPrompt?: string | null;
   },
   character: {
     name: string;
     generatedPrompt?: string | null;
-    // Legacy fallback fields
     corePersonality?: string;
     interactionStyle?: string;
     dialogueTone?: string;
@@ -21,14 +21,17 @@ export function buildSystemPrompt(
     neverBehaviors?: string;
   }
 ): string {
-  const base = character.generatedPrompt
+  const characterBlock = character.generatedPrompt
     ? character.generatedPrompt
     : buildFallbackPrompt(character);
 
-  return `${base}
+  const sceneBlock = scene.generatedPrompt
+    ? scene.generatedPrompt
+    : `Scene: ${scene.coreSituation}\nSetting: ${scene.setting}`;
 
-Scene: ${scene.coreSituation}
-Setting: ${scene.setting}
+  return `${characterBlock}
+
+${sceneBlock}
 
 You are in an intimate, romantic encounter with the user. Stay in character at all times. Keep responses personal and emotionally present — typically 2-5 sentences. Do not break character. Do not use asterisks for actions. Speak directly to the user as ${character.name}.`.trim();
 }

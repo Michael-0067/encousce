@@ -1,8 +1,10 @@
 "use client";
 
+import { SETTING_LABELS } from "@/lib/constants";
+
 const SETTING_GRADIENTS: Record<string, string> = {
-  MODERN: "from-enc-bg via-enc-plum-dark to-enc-surface",
-  FANTASY: "from-[#0a0a1a] via-[#1a0a2e] to-[#0f0a1f]",
+  MODERN:     "from-enc-bg via-enc-plum-dark to-enc-surface",
+  FANTASY:    "from-[#0a0a1a] via-[#1a0a2e] to-[#0f0a1f]",
   HISTORICAL: "from-[#1a1208] via-[#2a1e0a] to-[#1a1208]",
 };
 
@@ -11,8 +13,9 @@ export interface SceneData {
   title: string;
   coverImage: string | null;
   setting: string;
+  subLocation?: string;
   emotionalHook: string;
-  toneTags: string[];
+  teaserText?: string | null;
   tier: string;
   clickCount: number;
 }
@@ -25,7 +28,8 @@ interface Props {
 }
 
 export default function SceneCard({ scene, onClick, isFavorited, onToggleFavorite }: Props) {
-  const gradient = SETTING_GRADIENTS[scene.setting] || SETTING_GRADIENTS.MODERN;
+  const gradient = SETTING_GRADIENTS[scene.setting] ?? SETTING_GRADIENTS.MODERN;
+  const displayTeaser = scene.teaserText || scene.emotionalHook;
 
   return (
     <button
@@ -43,10 +47,8 @@ export default function SceneCard({ scene, onClick, isFavorited, onToggleFavorit
         <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
       )}
 
-      {/* overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
-      {/* favorite toggle — only for logged-in users */}
       {onToggleFavorite && (
         <button
           onClick={(e) => { e.stopPropagation(); onToggleFavorite(scene); }}
@@ -61,25 +63,25 @@ export default function SceneCard({ scene, onClick, isFavorited, onToggleFavorit
         </button>
       )}
 
-      {/* content */}
       <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1.5">
+        <div className="flex items-center gap-1.5">
+          <span className="text-enc-muted text-[10px] uppercase tracking-wide">
+            {SETTING_LABELS[scene.setting] ?? scene.setting}
+          </span>
+          {scene.subLocation && (
+            <>
+              <span className="text-enc-dim text-[10px]">·</span>
+              <span className="text-enc-dim text-[10px]">{scene.subLocation}</span>
+            </>
+          )}
+        </div>
         <h3 className="font-serif text-lg text-enc-cream leading-snug line-clamp-2">
           {scene.title}
         </h3>
-        <p className="text-enc-cream-muted text-xs leading-relaxed line-clamp-2">
-          {scene.emotionalHook}
-        </p>
-        {scene.toneTags.length > 0 && (
-          <div className="flex flex-wrap gap-1 pt-1">
-            {scene.toneTags.slice(0, 3).map((tag) => (
-              <span
-                key={tag}
-                className="text-enc-dim text-[10px] border border-enc-dim/50 px-1.5 py-0.5 rounded"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+        {displayTeaser && (
+          <p className="text-enc-cream-muted text-xs leading-relaxed line-clamp-2 italic">
+            {displayTeaser}
+          </p>
         )}
       </div>
     </button>

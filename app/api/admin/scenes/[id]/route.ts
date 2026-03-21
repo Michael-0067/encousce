@@ -18,19 +18,22 @@ export async function PATCH(
   const body = await req.json();
 
   const allowed = [
-    "title", "setting", "coreSituation", "emotionalHook", "openingMoment",
-    "toneTags", "allowedType1", "allowedType2", "coverImage", "imagePrompt",
-    "status", "tier",
+    "title", "setting", "subLocation", "timeOfDay", "lighting", "atmosphere", "environmentDetails",
+    "coreSituation", "relationshipDynamic", "leadIntent", "openingMoment",
+    "emotionalTone", "emotionalHook", "encounterGoal",
+    "allowedType1", "allowedType2",
+    "generatedPrompt", "imagePrompt", "teaserText", "coverImage",
+    "toneTags", "status", "tier",
   ];
   const data: Record<string, unknown> = {};
   for (const key of allowed) {
-    if (key in body) data[key] = body[key] === "" ? null : body[key];
+    if (key in body) data[key] = body[key];
   }
 
-  // allowedType2 empty string → null
-  if ("allowedType2" in data && data.allowedType2 === "") data.allowedType2 = null;
-  if ("coverImage" in data && data.coverImage === "") data.coverImage = null;
-  if ("imagePrompt" in data && data.imagePrompt === "") data.imagePrompt = null;
+  const nullableStrings = ["allowedType2", "coverImage", "imagePrompt", "generatedPrompt", "teaserText", "environmentDetails"];
+  for (const field of nullableStrings) {
+    if (field in data && data[field] === "") data[field] = null;
+  }
 
   const scene = await db.scene.update({ where: { id }, data });
   return NextResponse.json(scene);
