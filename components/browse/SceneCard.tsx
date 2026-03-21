@@ -20,9 +20,11 @@ export interface SceneData {
 interface Props {
   scene: SceneData;
   onClick: (scene: SceneData) => void;
+  isFavorited?: boolean;
+  onToggleFavorite?: (scene: SceneData) => void;
 }
 
-export default function SceneCard({ scene, onClick }: Props) {
+export default function SceneCard({ scene, onClick, isFavorited, onToggleFavorite }: Props) {
   const gradient = SETTING_GRADIENTS[scene.setting] || SETTING_GRADIENTS.MODERN;
 
   return (
@@ -43,6 +45,21 @@ export default function SceneCard({ scene, onClick }: Props) {
 
       {/* overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+
+      {/* favorite toggle — only for logged-in users */}
+      {onToggleFavorite && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleFavorite(scene); }}
+          className={`absolute top-2 right-2 z-10 w-7 h-7 flex items-center justify-center rounded-full transition-all
+            ${isFavorited
+              ? "bg-enc-rose/20 text-enc-rose opacity-100"
+              : "bg-black/40 text-enc-dim opacity-0 group-hover:opacity-100 hover:text-enc-rose"
+            }`}
+          title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+        >
+          <span className="text-sm leading-none">{isFavorited ? "★" : "☆"}</span>
+        </button>
+      )}
 
       {/* content */}
       <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1.5">

@@ -3,11 +3,11 @@
 import { LEAD_TYPE_LABELS } from "@/lib/constants";
 
 const TYPE_GRADIENTS: Record<string, string> = {
-  DOMINANT: "from-[#1a0a0a] via-[#2a0f0f] to-enc-plum-dark",
-  MYSTERIOUS: "from-[#0a0a1a] via-enc-plum-dark to-[#0a0a0f]",
-  PROTECTIVE: "from-[#0a1a0a] via-[#0f2a0f] to-enc-surface",
-  PLAYFUL: "from-enc-plum-dark via-[#2a1a2a] to-enc-surface",
-  SHY: "from-[#1a0f1a] via-enc-surface to-[#1a1a2a]",
+  DOMINANT:      "from-[#1a0a0a] via-[#2a0f0f] to-enc-plum-dark",
+  MYSTERIOUS:    "from-[#0a0a1a] via-enc-plum-dark to-[#0a0a0f]",
+  PROTECTIVE:    "from-[#0a1a0a] via-[#0f2a0f] to-enc-surface",
+  PLAYFUL:       "from-enc-plum-dark via-[#2a1a2a] to-enc-surface",
+  SHY:           "from-[#1a0f1a] via-enc-surface to-[#1a1a2a]",
   AUTHORITATIVE: "from-[#1a1008] via-[#2a1a08] to-enc-surface",
 };
 
@@ -25,9 +25,11 @@ export interface CharacterData {
 interface Props {
   character: CharacterData;
   onClick: (character: CharacterData) => void;
+  isFavorited?: boolean;
+  onToggleFavorite?: (character: CharacterData) => void;
 }
 
-export default function CharacterCard({ character, onClick }: Props) {
+export default function CharacterCard({ character, onClick, isFavorited, onToggleFavorite }: Props) {
   const gradient = TYPE_GRADIENTS[character.primaryType] || TYPE_GRADIENTS.MYSTERIOUS;
 
   return (
@@ -47,6 +49,21 @@ export default function CharacterCard({ character, onClick }: Props) {
       )}
 
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+
+      {/* favorite toggle — only for logged-in users */}
+      {onToggleFavorite && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleFavorite(character); }}
+          className={`absolute top-2 right-2 z-10 w-7 h-7 flex items-center justify-center rounded-full transition-all
+            ${isFavorited
+              ? "bg-enc-rose/20 text-enc-rose opacity-100"
+              : "bg-black/40 text-enc-dim opacity-0 group-hover:opacity-100 hover:text-enc-rose"
+            }`}
+          title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+        >
+          <span className="text-sm leading-none">{isFavorited ? "★" : "☆"}</span>
+        </button>
+      )}
 
       <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1">
         <div className="flex items-center gap-2">

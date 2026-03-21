@@ -17,13 +17,15 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  sessions       Session[]
-  passwordResets PasswordReset[]
-  encounters     Encounter[]
-  ledger         LedgerEntry[]
-  purchases      Purchase[]
-  scenes         Scene[]
-  characters     Character[]
+  sessions           Session[]
+  passwordResets     PasswordReset[]
+  encounters         Encounter[]
+  ledger             LedgerEntry[]
+  purchases          Purchase[]
+  scenes             Scene[]
+  characters         Character[]
+  favoriteScenes     FavoriteScene[]
+  favoriteCharacters FavoriteCharacter[]
 }
 
 model Session {
@@ -66,8 +68,9 @@ model Scene {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  author     User        @relation(fields: [authorId], references: [id])
-  encounters Encounter[]
+  author      User            @relation(fields: [authorId], references: [id])
+  encounters  Encounter[]
+  favoritedBy FavoriteScene[]
 }
 
 model Character {
@@ -89,8 +92,31 @@ model Character {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
-  author     User        @relation(fields: [authorId], references: [id])
-  encounters Encounter[]
+  author      User                @relation(fields: [authorId], references: [id])
+  encounters  Encounter[]
+  favoritedBy FavoriteCharacter[]
+}
+
+model FavoriteScene {
+  userId    String
+  sceneId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scene Scene @relation(fields: [sceneId], references: [id], onDelete: Cascade)
+
+  @@id([userId, sceneId])
+}
+
+model FavoriteCharacter {
+  userId      String
+  characterId String
+  createdAt   DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@id([userId, characterId])
 }
 
 model Encounter {

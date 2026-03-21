@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/prisma";
+import { getSession } from "@/lib/session";
 import LeadBrowse from "@/components/browse/LeadBrowse";
 import { SETTING_LABELS, LEAD_TYPE_LABELS } from "@/lib/constants";
 
@@ -11,27 +12,50 @@ async function getScene(id: string) {
   });
 }
 
-async function getCompatibleCharacters(scene: { allowedType1: string; allowedType2: string | null }) {
+async function getCompatibleCharacters(
+  scene: { allowedType1: string; allowedType2: string | null },
+  userId?: string
+) {
   const types = [scene.allowedType1, scene.allowedType2].filter(Boolean) as string[];
 
-  const characters = await db.character.findMany({
-    where: {
-      status: "PUBLISHED",
-      primaryType: { in: types },
-    },
-    orderBy: { selectionCount: "desc" },
-    include: { author: { select: { username: true } } },
-  });
+  const [characters, yours, favRows] = await Promise.all([
+    db.character.findMany({
+      where: { status: "PUBLISHED", primaryType: { in: types } },
+      orderBy: { selectionCount: "desc" },
+      include: { author: { select: { username: true } } },
+    }),
+    userId
+      ? db.character.findMany({
+          where: { authorId: userId, status: { not: "REMOVED" }, primaryType: { in: types } },
+          orderBy: { createdAt: "desc" },
+          include: { author: { select: { username: true } } },
+        })
+      : null,
+    userId
+      ? db.favoriteCharacter.findMany({
+          where: { userId },
+          orderBy: { createdAt: "desc" },
+          include: { character: { include: { author: { select: { username: true } } } } },
+        })
+      : null,
+  ]);
 
-  type CharacterRow = typeof characters[number];
-  const parse = (c: CharacterRow) => ({
+  type CharRow = typeof characters[number];
+  const parse = (c: CharRow) => ({
     ...c,
     compatibleSettings: (() => { try { return JSON.parse(c.compatibleSettings); } catch { return []; } })(),
   });
 
+  // Favorites filtered to only scene-compatible characters
+  const compatibleFavRows = favRows
+    ? favRows.filter((r) => types.includes(r.character.primaryType))
+    : null;
+
   return {
-    system: characters.filter((c) => c.tier === "SYSTEM").map(parse),
-    featured: characters.filter((c) => c.tier === "FEATURED").map(parse),
+    yours:     yours ? yours.map(parse) : null,
+    favorites: compatibleFavRows ? compatibleFavRows.map((r) => parse(r.character)) : null,
+    system:    characters.filter((c) => c.tier === "SYSTEM").map(parse),
+    featured:  characters.filter((c) => c.tier === "FEATURED").map(parse),
     community: characters.filter((c) => c.tier === "COMMUNITY").map(parse),
   };
 }
@@ -42,10 +66,10 @@ export default async function LeadsPage({
   params: Promise<{ sceneId: string }>;
 }) {
   const { sceneId } = await params;
-  const scene = await getScene(sceneId);
+  const [scene, session] = await Promise.all([getScene(sceneId), getSession()]);
   if (!scene) notFound();
 
-  const characters = await getCompatibleCharacters(scene);
+  const characters = await getCompatibleCharacters(scene, session?.user.id);
 
   const types = [scene.allowedType1, scene.allowedType2]
     .filter(Boolean)
@@ -91,11 +115,7 @@ export default async function LeadsPage({
         <p className="text-enc-muted text-sm">Who will you encounter in this scene?</p>
       </div>
 
-      <LeadBrowse
-        initial={characters}
-        sceneId={sceneId}
-        sceneTitle={scene.title}
-      />
+      <LeadBrowse initial={characters} sceneId={sceneId} sceneTitle={scene.title} />
     </div>
   );
 }

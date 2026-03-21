@@ -10,9 +10,10 @@ interface Props {
   onSortChange: (sort: string) => void;
   children: React.ReactNode;
   empty?: string;
+  hideSort?: boolean;
 }
 
-export default function ContentRow({ tier, count, sort, onSortChange, children, empty }: Props) {
+export default function ContentRow({ tier, count, sort, onSortChange, children, empty, hideSort }: Props) {
   const rowRef = useRef<HTMLDivElement>(null);
 
   function scroll(dir: "left" | "right") {
@@ -33,21 +34,23 @@ export default function ContentRow({ tier, count, sort, onSortChange, children, 
           )}
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex text-xs gap-2">
-            <button
-              onClick={() => onSortChange("popular")}
-              className={`transition-colors ${sort === "popular" ? "text-enc-cream" : "text-enc-dim hover:text-enc-muted"}`}
-            >
-              Popular
-            </button>
-            <span className="text-enc-dim">·</span>
-            <button
-              onClick={() => onSortChange("recent")}
-              className={`transition-colors ${sort === "recent" ? "text-enc-cream" : "text-enc-dim hover:text-enc-muted"}`}
-            >
-              Recent
-            </button>
-          </div>
+          {!hideSort && (
+            <div className="flex text-xs gap-2">
+              <button
+                onClick={() => onSortChange("popular")}
+                className={`transition-colors ${sort === "popular" ? "text-enc-cream" : "text-enc-dim hover:text-enc-muted"}`}
+              >
+                Popular
+              </button>
+              <span className="text-enc-dim">·</span>
+              <button
+                onClick={() => onSortChange("recent")}
+                className={`transition-colors ${sort === "recent" ? "text-enc-cream" : "text-enc-dim hover:text-enc-muted"}`}
+              >
+                Recent
+              </button>
+            </div>
+          )}
           {count > 3 && (
             <div className="flex gap-1">
               <button
