@@ -6,21 +6,19 @@ export async function GET(req: NextRequest) {
   const sceneId = searchParams.get("sceneId");
   const sort = searchParams.get("sort") || "popular";
 
-  let typeFilter: object = {};
+  let settingFilter: object = {};
 
   if (sceneId) {
     const scene = await db.scene.findUnique({
       where: { id: sceneId },
-      select: { allowedType1: true, allowedType2: true },
+      select: { setting: true },
     });
-
     if (scene) {
-      const types = [scene.allowedType1, scene.allowedType2].filter(Boolean) as string[];
-      typeFilter = { primaryType: { in: types } };
+      settingFilter = { setting: scene.setting };
     }
   }
 
-  const where = { status: "PUBLISHED", ...typeFilter };
+  const where = { status: "PUBLISHED", ...settingFilter };
   const orderBy =
     sort === "recent"
       ? { createdAt: "desc" as const }
@@ -28,9 +26,9 @@ export async function GET(req: NextRequest) {
 
   const characters = await db.character.findMany({ where, orderBy });
 
-  const system    = characters.filter((c) => c.tier === "SYSTEM");
-  const featured  = characters.filter((c) => c.tier === "FEATURED");
-  const community = characters.filter((c) => c.tier === "COMMUNITY");
-
-  return NextResponse.json({ system, featured, community });
+  return NextResponse.json({
+    system:    characters.filter((c) => c.tier === "SYSTEM"),
+    featured:  characters.filter((c) => c.tier === "FEATURED"),
+    community: characters.filter((c) => c.tier === "COMMUNITY"),
+  });
 }

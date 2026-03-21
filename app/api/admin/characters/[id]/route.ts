@@ -18,13 +18,13 @@ export async function PATCH(
   const body = await req.json();
 
   const allowed = [
-    "name",
+    "name", "setting",
     "visualSex", "genderExpression", "raceEthnicity", "apparentAge",
     "build", "presence", "hairStyle", "hairColor", "eyeColor", "distinguishingFeature",
     "primaryType", "secondaryTrait", "corePersonality", "interactionStyle",
     "dialogueTone", "emotionalStartingState", "alwaysBehaviors", "neverBehaviors",
     "generatedPrompt", "imagePrompt", "teaserText", "portraitImage",
-    "compatibleSettings", "status", "tier",
+    "status", "tier",
   ];
   const data: Record<string, unknown> = {};
   for (const key of allowed) {

@@ -21,7 +21,6 @@ export async function PATCH(
     "title", "setting", "subLocation", "timeOfDay", "lighting", "atmosphere", "environmentDetails",
     "coreSituation", "relationshipDynamic", "leadIntent", "openingMoment",
     "emotionalTone", "emotionalHook", "encounterGoal",
-    "allowedType1", "allowedType2",
     "generatedPrompt", "imagePrompt", "teaserText", "coverImage",
     "toneTags", "status", "tier",
   ];
@@ -30,7 +29,7 @@ export async function PATCH(
     if (key in body) data[key] = body[key];
   }
 
-  const nullableStrings = ["allowedType2", "coverImage", "imagePrompt", "generatedPrompt", "teaserText", "environmentDetails"];
+  const nullableStrings = ["coverImage", "imagePrompt", "generatedPrompt", "teaserText", "environmentDetails"];
   for (const field of nullableStrings) {
     if (field in data && data[field] === "") data[field] = null;
   }

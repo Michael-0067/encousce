@@ -30,8 +30,6 @@ export default async function AdminSceneEditPage({
         emotionalTone: scene.emotionalTone,
         emotionalHook: scene.emotionalHook,
         encounterGoal: scene.encounterGoal,
-        allowedType1: scene.allowedType1,
-        allowedType2: scene.allowedType2 ?? "",
         generatedPrompt: scene.generatedPrompt ?? "",
         imagePrompt: scene.imagePrompt ?? "",
         teaserText: scene.teaserText ?? "",

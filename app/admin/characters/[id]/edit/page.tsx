@@ -27,6 +27,7 @@ export default async function AdminCharacterEditPage({
         hairColor: character.hairColor,
         eyeColor: character.eyeColor,
         distinguishingFeature: character.distinguishingFeature ?? "",
+        setting: character.setting,
         primaryType: character.primaryType,
         secondaryTrait: character.secondaryTrait ?? "",
         corePersonality: character.corePersonality,
@@ -39,7 +40,6 @@ export default async function AdminCharacterEditPage({
         imagePrompt: character.imagePrompt ?? "",
         teaserText: character.teaserText ?? "",
         portraitImage: character.portraitImage ?? "",
-        compatibleSettings: character.compatibleSettings,
         status: character.status,
         tier: character.tier,
       }} />

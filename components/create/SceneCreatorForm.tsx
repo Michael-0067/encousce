@@ -13,8 +13,6 @@ import {
   LEAD_INTENTS,
   EMOTIONAL_TONES,
   ENCOUNTER_GOALS,
-  LEAD_TYPES,
-  LEAD_TYPE_LABELS,
   SCENE_GENERATION_COST,
 } from "@/lib/constants";
 
@@ -52,8 +50,6 @@ export default function SceneCreatorForm({ balance }: { balance: number }) {
     emotionalTone: "",
     emotionalHook: "",
     encounterGoal: "",
-    allowedType1: "",
-    allowedType2: "",
   });
 
   function set(field: string, value: string) {
@@ -80,8 +76,7 @@ export default function SceneCreatorForm({ balance }: { balance: number }) {
       form.openingMoment.trim() &&
       form.emotionalTone &&
       form.emotionalHook.trim() &&
-      form.encounterGoal &&
-      form.allowedType1
+      form.encounterGoal
     );
   }
 
@@ -326,20 +321,6 @@ export default function SceneCreatorForm({ balance }: { balance: number }) {
           {form.emotionalHook && <CharCount value={form.emotionalHook} max={120} />}
         </Field>
 
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Compatible Lead Archetype *">
-            <select className="enc-input" value={form.allowedType1} onChange={(e) => set("allowedType1", e.target.value)}>
-              <option value="" disabled>Select…</option>
-              {LEAD_TYPES.map((t) => <option key={t} value={t}>{LEAD_TYPE_LABELS[t]}</option>)}
-            </select>
-          </Field>
-          <Field label="Second Archetype" hint="Optional">
-            <select className="enc-input" value={form.allowedType2} onChange={(e) => set("allowedType2", e.target.value)}>
-              <option value="">None</option>
-              {LEAD_TYPES.map((t) => <option key={t} value={t}>{LEAD_TYPE_LABELS[t]}</option>)}
-            </select>
-          </Field>
-        </div>
       </section>
 
       {error && <p className="enc-error">{error}</p>}

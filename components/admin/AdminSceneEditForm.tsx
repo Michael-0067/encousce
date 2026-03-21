@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  SETTINGS, SETTING_LABELS, LEAD_TYPES, LEAD_TYPE_LABELS, CONTENT_TIERS,
+  SETTINGS, SETTING_LABELS, CONTENT_TIERS,
   SUB_LOCATIONS, TIME_OF_DAY, LIGHTING, ATMOSPHERE,
   RELATIONSHIP_DYNAMICS, LEAD_INTENTS, EMOTIONAL_TONES, ENCOUNTER_GOALS,
 } from "@/lib/constants";
@@ -24,8 +24,6 @@ interface SceneFields {
   emotionalTone: string;
   emotionalHook: string;
   encounterGoal: string;
-  allowedType1: string;
-  allowedType2: string;
   generatedPrompt: string;
   imagePrompt: string;
   teaserText: string;
@@ -148,19 +146,6 @@ export default function AdminSceneEditForm({ scene }: { scene: SceneFields }) {
         <Field label="Emotional Hook">
           <input value={form.emotionalHook} onChange={(e) => set("emotionalHook", e.target.value)} className={inputCls} maxLength={120} />
         </Field>
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Allowed Lead Type 1">
-            <select value={form.allowedType1} onChange={(e) => set("allowedType1", e.target.value)} className={inputCls}>
-              {LEAD_TYPES.map((t) => <option key={t} value={t}>{LEAD_TYPE_LABELS[t]}</option>)}
-            </select>
-          </Field>
-          <Field label="Allowed Lead Type 2">
-            <select value={form.allowedType2} onChange={(e) => set("allowedType2", e.target.value)} className={inputCls}>
-              <option value="">None</option>
-              {LEAD_TYPES.map((t) => <option key={t} value={t}>{LEAD_TYPE_LABELS[t]}</option>)}
-            </select>
-          </Field>
-        </div>
       </Section>
 
       <Section title="Generated Content">

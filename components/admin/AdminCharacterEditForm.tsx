@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
+  SETTINGS, SETTING_LABELS,
   LEAD_TYPES, LEAD_TYPE_LABELS, SECONDARY_TRAITS, CONTENT_TIERS,
   VISUAL_SEX, GENDER_EXPRESSION, RACE_ETHNICITY, APPARENT_AGE,
   BUILD, PRESENCE, HAIR_STYLE, HAIR_COLOR, EYE_COLOR,
@@ -34,7 +35,7 @@ interface CharacterFields {
   imagePrompt: string;
   teaserText: string;
   portraitImage: string;
-  compatibleSettings: string;
+  setting: string;
   status: string;
   tier: string;
 }
@@ -191,8 +192,10 @@ export default function AdminCharacterEditForm({ character }: { character: Chara
         <Field label="Portrait Image URL / Data URL">
           <textarea value={form.portraitImage} onChange={(e) => set("portraitImage", e.target.value)} rows={2} className={textareaCls} placeholder="https://... or data:image/png;base64,..." />
         </Field>
-        <Field label="Compatible Settings (JSON array, admin-only)">
-          <input value={form.compatibleSettings} onChange={(e) => set("compatibleSettings", e.target.value)} className={inputCls} />
+        <Field label="Setting">
+          <select value={form.setting} onChange={(e) => set("setting", e.target.value)} className={inputCls}>
+            {SETTINGS.map((s) => <option key={s} value={s}>{SETTING_LABELS[s]}</option>)}
+          </select>
         </Field>
       </Section>
 

@@ -65,13 +65,13 @@ export default function SceneCard({ scene, onClick, isFavorited, onToggleFavorit
 
       <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1.5">
         <div className="flex items-center gap-1.5">
-          <span className="text-enc-muted text-[10px] uppercase tracking-wide">
+          <span className="text-enc-cream-muted text-[10px] uppercase tracking-wide">
             {SETTING_LABELS[scene.setting] ?? scene.setting}
           </span>
           {scene.subLocation && (
             <>
-              <span className="text-enc-dim text-[10px]">·</span>
-              <span className="text-enc-dim text-[10px]">{scene.subLocation}</span>
+              <span className="text-enc-cream-muted text-[10px]">·</span>
+              <span className="text-enc-cream-muted text-[10px]">{scene.subLocation}</span>
             </>
           )}
         </div>

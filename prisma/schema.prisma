@@ -71,10 +71,6 @@ model Scene {
   emotionalHook       String
   encounterGoal       String   @default("Build quiet tension")
 
-  // Character matching
-  allowedType1        String
-  allowedType2        String?
-
   // Generated content
   generatedPrompt     String?
   imagePrompt         String?
@@ -112,6 +108,7 @@ model Character {
   distinguishingFeature String?
 
   // Section B — Personality
+  setting               String   @default("MODERN")
   primaryType           String
   secondaryTrait        String?
   corePersonality       String
@@ -128,7 +125,6 @@ model Character {
   portraitImage         String?
 
   // Admin / system
-  compatibleSettings    String   @default("[]")
   status                String   @default("DRAFT")
   tier                  String   @default("COMMUNITY")
   selectionCount        Int      @default(0)

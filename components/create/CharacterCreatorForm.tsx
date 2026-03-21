@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
+  SETTINGS,
+  SETTING_LABELS,
   VISUAL_SEX,
   GENDER_EXPRESSION,
   RACE_ETHNICITY,
@@ -113,6 +115,7 @@ export default function CharacterCreatorForm({ balance }: { balance: number }) {
   const [form, setForm] = useState({
     // Section A
     name: "",
+    setting: "",
     visualSex: "Unspecified",
     genderExpression: "Unspecified",
     raceEthnicity: "",
@@ -143,6 +146,7 @@ export default function CharacterCreatorForm({ balance }: { balance: number }) {
     const neverFilled = form.neverBehaviors.filter((b) => b.trim()).length >= 2;
     return (
       form.name.trim() &&
+      form.setting &&
       form.primaryType &&
       form.corePersonality.trim() &&
       form.interactionStyle &&
@@ -262,15 +266,25 @@ export default function CharacterCreatorForm({ balance }: { balance: number }) {
           <p className="text-enc-dim text-sm mt-1">Visual identity and first impression.</p>
         </div>
 
-        <Field label="Name *">
-          <input
-            className="enc-input"
-            placeholder="e.g. Elara, Marcus, The Stranger"
-            value={form.name}
-            maxLength={50}
-            onChange={(e) => set("name", e.target.value)}
-          />
-        </Field>
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Name *">
+            <input
+              className="enc-input"
+              placeholder="e.g. Elara, Marcus, The Stranger"
+              value={form.name}
+              maxLength={50}
+              onChange={(e) => set("name", e.target.value)}
+            />
+          </Field>
+          <Field label="Setting *" hint="Scenes this character fits">
+            <Select value={form.setting} onChange={(v) => set("setting", v)}>
+              <option value="" disabled>Select…</option>
+              {SETTINGS.map((s) => (
+                <option key={s} value={s}>{SETTING_LABELS[s]}</option>
+              ))}
+            </Select>
+          </Field>
+        </div>
 
         <div className="grid grid-cols-2 gap-4">
           <Field label="Visual Sex">

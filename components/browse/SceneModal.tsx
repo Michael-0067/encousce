@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { SceneData } from "./SceneCard";
-import { SETTING_LABELS, LEAD_TYPE_LABELS } from "@/lib/constants";
+import { SETTING_LABELS } from "@/lib/constants";
 
 interface Props {
   scene: SceneData & {
@@ -11,8 +11,6 @@ interface Props {
     emotionalTone?: string;
     atmosphere?: string;
     subLocation?: string;
-    allowedType1?: string;
-    allowedType2?: string | null;
   };
   onClose: () => void;
   onPrev?: () => void;
@@ -105,19 +103,6 @@ export default function SceneModal({ scene, onClose, onPrev, onNext, hasPrev, ha
             <p className="text-enc-cream-muted text-sm leading-relaxed">{scene.coreSituation}</p>
           )}
 
-          {scene.allowedType1 && (
-            <div className="flex items-center gap-2 pt-1 flex-wrap">
-              <span className="text-enc-dim text-xs">Compatible leads:</span>
-              <span className="text-enc-muted text-xs border border-enc-border px-2 py-0.5 rounded">
-                {LEAD_TYPE_LABELS[scene.allowedType1] ?? scene.allowedType1}
-              </span>
-              {scene.allowedType2 && (
-                <span className="text-enc-muted text-xs border border-enc-border px-2 py-0.5 rounded">
-                  {LEAD_TYPE_LABELS[scene.allowedType2] ?? scene.allowedType2}
-                </span>
-              )}
-            </div>
-          )}
         </div>
 
         <div className="px-6 pb-6 shrink-0">

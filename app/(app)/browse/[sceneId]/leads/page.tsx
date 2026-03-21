@@ -3,7 +3,7 @@ import Link from "next/link";
 import { db } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import LeadBrowse from "@/components/browse/LeadBrowse";
-import { SETTING_LABELS, LEAD_TYPE_LABELS } from "@/lib/constants";
+import { SETTING_LABELS } from "@/lib/constants";
 
 async function getScene(id: string) {
   return db.scene.findUnique({
@@ -13,20 +13,18 @@ async function getScene(id: string) {
 }
 
 async function getCompatibleCharacters(
-  scene: { allowedType1: string; allowedType2: string | null },
+  scene: { setting: string },
   userId?: string
 ) {
-  const types = [scene.allowedType1, scene.allowedType2].filter(Boolean) as string[];
-
   const [characters, yours, favRows] = await Promise.all([
     db.character.findMany({
-      where: { status: "PUBLISHED", primaryType: { in: types } },
+      where: { status: "PUBLISHED", setting: scene.setting },
       orderBy: { selectionCount: "desc" },
       include: { author: { select: { username: true } } },
     }),
     userId
       ? db.character.findMany({
-          where: { authorId: userId, status: { not: "REMOVED" }, primaryType: { in: types } },
+          where: { authorId: userId, status: { not: "REMOVED" }, setting: scene.setting },
           orderBy: { createdAt: "desc" },
           include: { author: { select: { username: true } } },
         })
@@ -40,20 +38,16 @@ async function getCompatibleCharacters(
       : null,
   ]);
 
-  type CharRow = typeof characters[number];
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const parse = (c: CharRow) => ({ ...c });
-
   const compatibleFavRows = favRows
-    ? favRows.filter((r) => types.includes(r.character.primaryType))
+    ? favRows.filter((r) => r.character.setting === scene.setting)
     : null;
 
   return {
-    yours:     yours ? yours.map(parse) : null,
-    favorites: compatibleFavRows ? compatibleFavRows.map((r) => parse(r.character)) : null,
-    system:    characters.filter((c) => c.tier === "SYSTEM").map(parse),
-    featured:  characters.filter((c) => c.tier === "FEATURED").map(parse),
-    community: characters.filter((c) => c.tier === "COMMUNITY").map(parse),
+    yours:     yours ?? null,
+    favorites: compatibleFavRows ? compatibleFavRows.map((r) => r.character) : null,
+    system:    characters.filter((c) => c.tier === "SYSTEM"),
+    featured:  characters.filter((c) => c.tier === "FEATURED"),
+    community: characters.filter((c) => c.tier === "COMMUNITY"),
   };
 }
 
@@ -68,14 +62,8 @@ export default async function LeadsPage({
 
   const characters = await getCompatibleCharacters(scene, session?.user.id);
 
-  const types = [scene.allowedType1, scene.allowedType2]
-    .filter(Boolean)
-    .map((t) => LEAD_TYPE_LABELS[t!] || t)
-    .join(" or ");
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-      {/* breadcrumb */}
       <div className="flex items-center gap-2 text-enc-dim text-sm mb-8">
         <Link href="/browse" className="hover:text-enc-muted transition-colors">
           Scenes
@@ -86,7 +74,6 @@ export default async function LeadsPage({
         <span className="text-enc-cream-muted">Choose your lead</span>
       </div>
 
-      {/* scene context strip */}
       <div className="flex gap-4 items-start mb-8 p-4 rounded-xl bg-enc-surface border border-enc-border">
         {scene.coverImage && (
           <img
@@ -97,13 +84,11 @@ export default async function LeadsPage({
         )}
         <div className="min-w-0">
           <div className="text-enc-muted text-xs mb-1">
-            {SETTING_LABELS[scene.setting] || scene.setting}
+            {SETTING_LABELS[scene.setting] ?? scene.setting}
+            {scene.subLocation && ` · ${scene.subLocation}`}
           </div>
           <h2 className="font-serif text-xl text-enc-cream mb-1">{scene.title}</h2>
           <p className="text-enc-rose text-sm italic line-clamp-1">{scene.emotionalHook}</p>
-          {types && (
-            <p className="text-enc-dim text-xs mt-1">Looking for: {types}</p>
-          )}
         </div>
       </div>
 

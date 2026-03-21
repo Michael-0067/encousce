@@ -58,8 +58,6 @@ interface SceneBody {
   emotionalTone: string;
   emotionalHook: string;
   encounterGoal: string;
-  allowedType1: string;
-  allowedType2: string;
 }
 
 // ── Handler ────────────────────────────────────────────────────────────────
@@ -84,7 +82,6 @@ export async function POST(req: NextRequest) {
     !body.emotionalTone && "emotionalTone",
     !body.emotionalHook?.trim() && "emotionalHook",
     !body.encounterGoal && "encounterGoal",
-    !body.allowedType1 && "allowedType1",
   ].filter(Boolean);
 
   if (missing.length) {
@@ -188,8 +185,6 @@ export async function POST(req: NextRequest) {
           emotionalTone: body.emotionalTone,
           emotionalHook: body.emotionalHook.trim(),
           encounterGoal: body.encounterGoal,
-          allowedType1: body.allowedType1,
-          allowedType2: body.allowedType2 || null,
           generatedPrompt,
           imagePrompt,
           teaserText,

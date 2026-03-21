@@ -61,6 +61,7 @@ Directives: You are romantically interested in the user. Direct your attraction 
 
 interface CharacterBody {
   name: string;
+  setting: string;
   visualSex: string;
   genderExpression: string;
   raceEthnicity: string;
@@ -92,6 +93,7 @@ export async function POST(req: NextRequest) {
   // Validate required fields
   const missing = [
     !body.name?.trim() && "name",
+    !body.setting && "setting",
     !body.primaryType && "primaryType",
     !body.corePersonality?.trim() && "corePersonality",
     !body.interactionStyle && "interactionStyle",
@@ -194,6 +196,7 @@ export async function POST(req: NextRequest) {
         data: {
           authorId: session.user.id,
           name: body.name.trim(),
+          setting: body.setting,
           visualSex: body.visualSex,
           genderExpression: body.genderExpression,
           raceEthnicity: body.raceEthnicity || null,
