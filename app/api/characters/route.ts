@@ -16,12 +16,7 @@ export async function GET(req: NextRequest) {
 
     if (scene) {
       const types = [scene.allowedType1, scene.allowedType2].filter(Boolean) as string[];
-      typeFilter = {
-        OR: [
-          { primaryType: { in: types } },
-          { secondaryType: { in: types } },
-        ],
-      };
+      typeFilter = { primaryType: { in: types } };
     }
   }
 
@@ -31,20 +26,11 @@ export async function GET(req: NextRequest) {
       ? { createdAt: "desc" as const }
       : { selectionCount: "desc" as const };
 
-  const characters = await db.character.findMany({
-    where,
-    orderBy,
-    include: { author: { select: { username: true } } },
-  });
+  const characters = await db.character.findMany({ where, orderBy });
 
-  const parse = (c: { compatibleSettings: string; [key: string]: unknown }) => ({
-    ...c,
-    compatibleSettings: (() => { try { return JSON.parse(c.compatibleSettings); } catch { return []; } })(),
-  });
-
-  const system = characters.filter((c) => c.tier === "SYSTEM").map(parse);
-  const featured = characters.filter((c) => c.tier === "FEATURED").map(parse);
-  const community = characters.filter((c) => c.tier === "COMMUNITY").map(parse);
+  const system    = characters.filter((c) => c.tier === "SYSTEM");
+  const featured  = characters.filter((c) => c.tier === "FEATURED");
+  const community = characters.filter((c) => c.tier === "COMMUNITY");
 
   return NextResponse.json({ system, featured, community });
 }

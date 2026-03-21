@@ -8,7 +8,7 @@ interface CharacterRow {
   id: string;
   name: string;
   primaryType: string;
-  secondaryType: string;
+  secondaryTrait: string;
   tier: string;
   status: string;
   author: string;
@@ -50,8 +50,8 @@ export default function AdminCharacterTable({ rows }: { rows: CharacterRow[] }) 
               <td className="px-4 py-3 text-enc-cream">{row.name}</td>
               <td className="px-4 py-3 text-enc-muted hidden sm:table-cell">
                 <span className="capitalize">{row.primaryType.toLowerCase()}</span>
-                {row.secondaryType && (
-                  <span className="text-enc-dim"> / {row.secondaryType.toLowerCase()}</span>
+                {row.secondaryTrait && (
+                  <span className="text-enc-dim"> / {row.secondaryTrait.toLowerCase()}</span>
                 )}
               </td>
               <td className="px-4 py-3 hidden md:table-cell">

@@ -11,7 +11,7 @@ export default async function AdminCharactersPage() {
     id: c.id,
     name: c.name,
     primaryType: c.primaryType,
-    secondaryType: c.secondaryType ?? "",
+    secondaryTrait: c.secondaryTrait ?? "",
     tier: c.tier,
     status: c.status,
     author: c.author.username,

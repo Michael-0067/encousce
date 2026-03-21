@@ -2,20 +2,39 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LEAD_TYPES, CONTENT_TIERS, LEAD_TYPE_LABELS, SETTINGS, SETTING_LABELS } from "@/lib/constants";
+import {
+  LEAD_TYPES, LEAD_TYPE_LABELS, SECONDARY_TRAITS, CONTENT_TIERS,
+  VISUAL_SEX, GENDER_EXPRESSION, RACE_ETHNICITY, APPARENT_AGE,
+  BUILD, PRESENCE, HAIR_STYLE, HAIR_COLOR, EYE_COLOR,
+  INTERACTION_STYLES, DIALOGUE_TONES, EMOTIONAL_STARTING_STATES,
+} from "@/lib/constants";
 
 interface CharacterFields {
   id: string;
   name: string;
+  visualSex: string;
+  genderExpression: string;
+  raceEthnicity: string;
+  apparentAge: string;
+  build: string;
+  presence: string;
+  hairStyle: string;
+  hairColor: string;
+  eyeColor: string;
+  distinguishingFeature: string;
   primaryType: string;
-  secondaryType: string;
-  compatibleSettings: string;
+  secondaryTrait: string;
   corePersonality: string;
   interactionStyle: string;
   dialogueTone: string;
-  behaviorRules: string;
-  portraitImage: string;
+  emotionalStartingState: string;
+  alwaysBehaviors: string;
+  neverBehaviors: string;
+  generatedPrompt: string;
   imagePrompt: string;
+  teaserText: string;
+  portraitImage: string;
+  compatibleSettings: string;
   status: string;
   tier: string;
 }
@@ -41,94 +60,141 @@ export default function AdminCharacterEditForm({ character }: { character: Chara
       body: JSON.stringify(form),
     });
     setSaving(false);
-    if (res.ok) {
-      setSaved(true);
-      router.refresh();
-    } else {
-      setError("Save failed.");
-    }
+    if (res.ok) { setSaved(true); router.refresh(); }
+    else setError("Save failed.");
   }
 
   return (
-    <div className="space-y-5">
-      <Field label="Name">
-        <input value={form.name} onChange={(e) => set("name", e.target.value)} className={inputCls} />
-      </Field>
-
-      <div className="grid grid-cols-2 gap-4">
-        <Field label="Primary Type">
-          <select value={form.primaryType} onChange={(e) => set("primaryType", e.target.value)} className={inputCls}>
-            {LEAD_TYPES.map((t) => <option key={t} value={t}>{LEAD_TYPE_LABELS[t]}</option>)}
-          </select>
+    <div className="space-y-6">
+      <Section title="Identity">
+        <Field label="Name">
+          <input value={form.name} onChange={(e) => set("name", e.target.value)} className={inputCls} />
         </Field>
-        <Field label="Secondary Type (optional)">
-          <select value={form.secondaryType} onChange={(e) => set("secondaryType", e.target.value)} className={inputCls}>
-            <option value="">None</option>
-            {LEAD_TYPES.map((t) => <option key={t} value={t}>{LEAD_TYPE_LABELS[t]}</option>)}
-          </select>
-        </Field>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <Field label="Tier">
-          <select value={form.tier} onChange={(e) => set("tier", e.target.value)} className={inputCls}>
-            {CONTENT_TIERS.map((t) => <option key={t} value={t}>{t}</option>)}
-          </select>
-        </Field>
-        <Field label="Status">
-          <select value={form.status} onChange={(e) => set("status", e.target.value)} className={inputCls}>
-            {["DRAFT", "PUBLISHED", "HIDDEN", "ARCHIVED"].map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
-        </Field>
-      </div>
-
-      <Field label="Compatible Settings (JSON array)">
-        <div className="flex gap-2 flex-wrap">
-          {SETTINGS.map((s) => {
-            let arr: string[] = [];
-            try { arr = JSON.parse(form.compatibleSettings); } catch {}
-            const checked = arr.includes(s);
-            return (
-              <label key={s} className="flex items-center gap-1.5 text-sm text-enc-muted cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => {
-                    const next = checked ? arr.filter((x) => x !== s) : [...arr, s];
-                    set("compatibleSettings", JSON.stringify(next));
-                  }}
-                  className="accent-enc-plum"
-                />
-                {SETTING_LABELS[s]}
-              </label>
-            );
-          })}
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Tier">
+            <select value={form.tier} onChange={(e) => set("tier", e.target.value)} className={inputCls}>
+              {CONTENT_TIERS.map((t) => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </Field>
+          <Field label="Status">
+            <select value={form.status} onChange={(e) => set("status", e.target.value)} className={inputCls}>
+              {["DRAFT", "PUBLISHED", "HIDDEN", "ARCHIVED"].map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </Field>
         </div>
-      </Field>
+      </Section>
 
-      <Field label="Core Personality">
-        <textarea value={form.corePersonality} onChange={(e) => set("corePersonality", e.target.value)} rows={3} className={textareaCls} />
-      </Field>
+      <Section title="Section A — Visual">
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Visual Sex">
+            <select value={form.visualSex} onChange={(e) => set("visualSex", e.target.value)} className={inputCls}>
+              {VISUAL_SEX.map((v) => <option key={v} value={v}>{v}</option>)}
+            </select>
+          </Field>
+          <Field label="Gender Expression">
+            <select value={form.genderExpression} onChange={(e) => set("genderExpression", e.target.value)} className={inputCls}>
+              {GENDER_EXPRESSION.map((v) => <option key={v} value={v}>{v}</option>)}
+            </select>
+          </Field>
+          <Field label="Race / Ethnicity">
+            <select value={form.raceEthnicity} onChange={(e) => set("raceEthnicity", e.target.value)} className={inputCls}>
+              <option value="">Unspecified</option>
+              {RACE_ETHNICITY.map((v) => <option key={v} value={v}>{v}</option>)}
+            </select>
+          </Field>
+          <Field label="Apparent Age">
+            <select value={form.apparentAge} onChange={(e) => set("apparentAge", e.target.value)} className={inputCls}>
+              {APPARENT_AGE.map((v) => <option key={v} value={v}>{v}</option>)}
+            </select>
+          </Field>
+          <Field label="Build">
+            <select value={form.build} onChange={(e) => set("build", e.target.value)} className={inputCls}>
+              {BUILD.map((v) => <option key={v} value={v}>{v}</option>)}
+            </select>
+          </Field>
+          <Field label="Presence">
+            <select value={form.presence} onChange={(e) => set("presence", e.target.value)} className={inputCls}>
+              {PRESENCE.map((v) => <option key={v} value={v}>{v}</option>)}
+            </select>
+          </Field>
+          <Field label="Hair Style">
+            <select value={form.hairStyle} onChange={(e) => set("hairStyle", e.target.value)} className={inputCls}>
+              {HAIR_STYLE.map((v) => <option key={v} value={v}>{v}</option>)}
+            </select>
+          </Field>
+          <Field label="Hair Color">
+            <select value={form.hairColor} onChange={(e) => set("hairColor", e.target.value)} className={inputCls}>
+              {HAIR_COLOR.map((v) => <option key={v} value={v}>{v}</option>)}
+            </select>
+          </Field>
+          <Field label="Eye Color">
+            <select value={form.eyeColor} onChange={(e) => set("eyeColor", e.target.value)} className={inputCls}>
+              {EYE_COLOR.map((v) => <option key={v} value={v}>{v}</option>)}
+            </select>
+          </Field>
+        </div>
+        <Field label="Distinguishing Feature">
+          <input value={form.distinguishingFeature} onChange={(e) => set("distinguishingFeature", e.target.value)} className={inputCls} maxLength={50} />
+        </Field>
+      </Section>
 
-      <Field label="Interaction Style">
-        <textarea value={form.interactionStyle} onChange={(e) => set("interactionStyle", e.target.value)} rows={2} className={textareaCls} />
-      </Field>
+      <Section title="Section B — Personality">
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Primary Archetype">
+            <select value={form.primaryType} onChange={(e) => set("primaryType", e.target.value)} className={inputCls}>
+              {LEAD_TYPES.map((t) => <option key={t} value={t}>{LEAD_TYPE_LABELS[t]}</option>)}
+            </select>
+          </Field>
+          <Field label="Secondary Trait">
+            <select value={form.secondaryTrait} onChange={(e) => set("secondaryTrait", e.target.value)} className={inputCls}>
+              <option value="">None</option>
+              {SECONDARY_TRAITS.map((t) => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </Field>
+          <Field label="Interaction Style">
+            <select value={form.interactionStyle} onChange={(e) => set("interactionStyle", e.target.value)} className={inputCls}>
+              {INTERACTION_STYLES.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </Field>
+          <Field label="Dialogue Tone">
+            <select value={form.dialogueTone} onChange={(e) => set("dialogueTone", e.target.value)} className={inputCls}>
+              {DIALOGUE_TONES.map((t) => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </Field>
+          <Field label="Emotional Starting State">
+            <select value={form.emotionalStartingState} onChange={(e) => set("emotionalStartingState", e.target.value)} className={inputCls}>
+              {EMOTIONAL_STARTING_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </Field>
+        </div>
+        <Field label="Core Personality">
+          <textarea value={form.corePersonality} onChange={(e) => set("corePersonality", e.target.value)} rows={3} className={textareaCls} maxLength={200} />
+        </Field>
+        <Field label="Always Behaviors (JSON array)">
+          <textarea value={form.alwaysBehaviors} onChange={(e) => set("alwaysBehaviors", e.target.value)} rows={2} className={textareaCls} />
+        </Field>
+        <Field label="Never Behaviors (JSON array)">
+          <textarea value={form.neverBehaviors} onChange={(e) => set("neverBehaviors", e.target.value)} rows={2} className={textareaCls} />
+        </Field>
+      </Section>
 
-      <Field label="Dialogue Tone">
-        <textarea value={form.dialogueTone} onChange={(e) => set("dialogueTone", e.target.value)} rows={2} className={textareaCls} />
-      </Field>
-
-      <Field label="Behavior Rules">
-        <textarea value={form.behaviorRules} onChange={(e) => set("behaviorRules", e.target.value)} rows={3} className={textareaCls} />
-      </Field>
-
-      <Field label="Portrait Image URL">
-        <input value={form.portraitImage} onChange={(e) => set("portraitImage", e.target.value)} className={inputCls} />
-      </Field>
-
-      <Field label="Image Prompt">
-        <textarea value={form.imagePrompt} onChange={(e) => set("imagePrompt", e.target.value)} rows={2} className={textareaCls} />
-      </Field>
+      <Section title="Generated Content">
+        <Field label="Generated Prompt">
+          <textarea value={form.generatedPrompt} onChange={(e) => set("generatedPrompt", e.target.value)} rows={6} className={textareaCls} />
+        </Field>
+        <Field label="Teaser Text">
+          <input value={form.teaserText} onChange={(e) => set("teaserText", e.target.value)} className={inputCls} />
+        </Field>
+        <Field label="Image Prompt">
+          <textarea value={form.imagePrompt} onChange={(e) => set("imagePrompt", e.target.value)} rows={3} className={textareaCls} />
+        </Field>
+        <Field label="Portrait Image URL / Data URL">
+          <textarea value={form.portraitImage} onChange={(e) => set("portraitImage", e.target.value)} rows={2} className={textareaCls} placeholder="https://... or data:image/png;base64,..." />
+        </Field>
+        <Field label="Compatible Settings (JSON array, admin-only)">
+          <input value={form.compatibleSettings} onChange={(e) => set("compatibleSettings", e.target.value)} className={inputCls} />
+        </Field>
+      </Section>
 
       {error && <p className="text-enc-rose text-sm">{error}</p>}
 
@@ -145,6 +211,15 @@ export default function AdminCharacterEditForm({ character }: { character: Chara
         </button>
         {saved && <span className="text-green-400 text-sm">Saved.</span>}
       </div>
+    </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-4 border border-enc-border rounded-xl p-5">
+      <h3 className="text-enc-dim text-xs uppercase tracking-wide border-b border-enc-border pb-2">{title}</h3>
+      {children}
     </div>
   );
 }

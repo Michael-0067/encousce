@@ -12,25 +12,38 @@ export function buildSystemPrompt(
   },
   character: {
     name: string;
-    corePersonality: string;
-    interactionStyle: string;
-    dialogueTone: string;
-    behaviorRules: string;
+    generatedPrompt?: string | null;
+    // Legacy fallback fields
+    corePersonality?: string;
+    interactionStyle?: string;
+    dialogueTone?: string;
+    alwaysBehaviors?: string;
+    neverBehaviors?: string;
   }
 ): string {
-  return `You are ${character.name}.
+  const base = character.generatedPrompt
+    ? character.generatedPrompt
+    : buildFallbackPrompt(character);
 
-Personality: ${character.corePersonality}
-
-How you engage: ${character.interactionStyle}
-
-How you speak: ${character.dialogueTone}
-
-Rules: ${character.behaviorRules}
+  return `${base}
 
 Scene: ${scene.coreSituation}
-
 Setting: ${scene.setting}
 
 You are in an intimate, romantic encounter with the user. Stay in character at all times. Keep responses personal and emotionally present — typically 2-5 sentences. Do not break character. Do not use asterisks for actions. Speak directly to the user as ${character.name}.`.trim();
+}
+
+function buildFallbackPrompt(character: {
+  name?: string;
+  corePersonality?: string;
+  interactionStyle?: string;
+  dialogueTone?: string;
+  alwaysBehaviors?: string;
+  neverBehaviors?: string;
+}): string {
+  let prompt = `You are ${character.name}.`;
+  if (character.corePersonality) prompt += `\n\nPersonality: ${character.corePersonality}`;
+  if (character.interactionStyle) prompt += `\n\nHow you engage: ${character.interactionStyle}`;
+  if (character.dialogueTone) prompt += `\n\nHow you speak: ${character.dialogueTone}`;
+  return prompt;
 }

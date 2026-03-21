@@ -74,23 +74,45 @@ model Scene {
 }
 
 model Character {
-  id                 String   @id @default(cuid())
-  name               String
-  portraitImage      String?
-  imagePrompt        String?
-  primaryType        String
-  secondaryType      String?
-  compatibleSettings String   @default("[]")
-  corePersonality    String
-  interactionStyle   String
-  dialogueTone       String
-  behaviorRules      String
-  status             String   @default("DRAFT")
-  tier               String   @default("COMMUNITY")
-  authorId           String
-  selectionCount     Int      @default(0)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id                    String   @id @default(cuid())
+  authorId              String
+
+  // Section A — Visual Identity
+  name                  String
+  visualSex             String   @default("Unspecified")
+  genderExpression      String   @default("Unspecified")
+  raceEthnicity         String?
+  apparentAge           String   @default("30s")
+  build                 String   @default("Athletic")
+  presence              String   @default("Controlled")
+  hairStyle             String   @default("Short")
+  hairColor             String   @default("Brown")
+  eyeColor              String   @default("Brown")
+  distinguishingFeature String?
+
+  // Section B — Personality
+  primaryType           String
+  secondaryTrait        String?
+  corePersonality       String
+  interactionStyle      String
+  dialogueTone          String
+  emotionalStartingState String  @default("Calm and assessing")
+  alwaysBehaviors       String   @default("[]")
+  neverBehaviors        String   @default("[]")
+
+  // Generated content
+  generatedPrompt       String?
+  imagePrompt           String?
+  teaserText            String?
+  portraitImage         String?
+
+  // Admin / system
+  compatibleSettings    String   @default("[]")
+  status                String   @default("DRAFT")
+  tier                  String   @default("COMMUNITY")
+  selectionCount        Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
   author      User                @relation(fields: [authorId], references: [id])
   encounters  Encounter[]

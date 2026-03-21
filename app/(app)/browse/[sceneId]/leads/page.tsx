@@ -41,12 +41,9 @@ async function getCompatibleCharacters(
   ]);
 
   type CharRow = typeof characters[number];
-  const parse = (c: CharRow) => ({
-    ...c,
-    compatibleSettings: (() => { try { return JSON.parse(c.compatibleSettings); } catch { return []; } })(),
-  });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const parse = (c: CharRow) => ({ ...c });
 
-  // Favorites filtered to only scene-compatible characters
   const compatibleFavRows = favRows
     ? favRows.filter((r) => types.includes(r.character.primaryType))
     : null;
