@@ -153,7 +153,7 @@ export default function SceneBrowse({ initial }: Props) {
       </div>
 
       {/* rows */}
-      <div className="space-y-10">
+      <div className="space-y-6">
         {allRows.map(({ key, label }) => {
           const data = getScenesForTier(key);
           const isPersonal = key === "yours" || key === "favorites";
@@ -171,7 +171,7 @@ export default function SceneBrowse({ initial }: Props) {
                 <div
                   key={scene.id}
                   className="flex-none"
-                  style={{ width: "calc(33.333% - 0.667rem)" }}
+                  style={{ width: "160px" }}
                 >
                   <SceneCard
                     scene={scene}

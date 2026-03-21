@@ -63,23 +63,23 @@ export default function SceneCard({ scene, onClick, isFavorited, onToggleFavorit
         </button>
       )}
 
-      <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1.5">
-        <div className="flex items-center gap-1.5">
-          <span className="text-enc-cream-muted text-[10px] uppercase tracking-wide">
+      <div className="absolute bottom-0 left-0 right-0 p-3 space-y-1">
+        <div className="flex items-center gap-1">
+          <span className="text-enc-cream-muted text-[9px] uppercase tracking-wide">
             {SETTING_LABELS[scene.setting] ?? scene.setting}
           </span>
           {scene.subLocation && (
             <>
-              <span className="text-enc-cream-muted text-[10px]">·</span>
-              <span className="text-enc-cream-muted text-[10px]">{scene.subLocation}</span>
+              <span className="text-enc-cream-muted text-[9px]">·</span>
+              <span className="text-enc-cream-muted text-[9px]">{scene.subLocation}</span>
             </>
           )}
         </div>
-        <h3 className="font-serif text-lg text-enc-cream leading-snug line-clamp-2">
+        <h3 className="font-serif text-sm text-enc-cream leading-snug line-clamp-2">
           {scene.title}
         </h3>
         {displayTeaser && (
-          <p className="text-enc-cream-muted text-xs leading-relaxed line-clamp-2 italic">
+          <p className="text-enc-cream-muted text-[10px] leading-relaxed line-clamp-2 italic">
             {displayTeaser}
           </p>
         )}

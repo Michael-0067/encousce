@@ -67,15 +67,15 @@ export default function CharacterCard({ character, onClick, isFavorited, onToggl
         </button>
       )}
 
-      <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1">
-        <span className="text-enc-rose text-[10px] border border-enc-rose/40 px-1.5 py-0.5 rounded uppercase tracking-wide">
+      <div className="absolute bottom-0 left-0 right-0 p-3 space-y-1">
+        <span className="text-enc-rose text-[9px] border border-enc-rose/40 px-1 py-0.5 rounded uppercase tracking-wide">
           {LEAD_TYPE_LABELS[character.primaryType] ?? character.primaryType}
         </span>
-        <h3 className="font-serif text-lg text-enc-cream leading-snug">
+        <h3 className="font-serif text-sm text-enc-cream leading-snug">
           {character.name}
         </h3>
         {character.teaserText && (
-          <p className="text-enc-cream-muted text-xs line-clamp-2 leading-relaxed italic">
+          <p className="text-enc-cream-muted text-[10px] line-clamp-2 leading-relaxed italic">
             {character.teaserText}
           </p>
         )}

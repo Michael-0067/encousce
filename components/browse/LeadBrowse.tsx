@@ -132,7 +132,7 @@ export default function LeadBrowse({ initial, sceneId, sceneTitle }: Props) {
             <p className="text-enc-dim text-sm">Try creating a character that matches this scene&apos;s lead types.</p>
           </div>
         ) : (
-          <div className="space-y-10">
+          <div className="space-y-6">
             {allRows.map(({ key, label }) => {
               const data = getCharsForTier(key);
               const isPersonal = key === "yours" || key === "favorites";
@@ -150,7 +150,7 @@ export default function LeadBrowse({ initial, sceneId, sceneTitle }: Props) {
                     <div
                       key={character.id}
                       className="flex-none"
-                      style={{ width: "calc(33.333% - 0.667rem)" }}
+                      style={{ width: "160px" }}
                     >
                       <CharacterCard
                         character={character}

@@ -18,8 +18,8 @@ export default function ContentRow({ tier, count, sort, onSortChange, children, 
 
   function scroll(dir: "left" | "right") {
     if (!rowRef.current) return;
-    const cardWidth = rowRef.current.offsetWidth / 3;
-    rowRef.current.scrollBy({ left: dir === "left" ? -cardWidth : cardWidth, behavior: "smooth" });
+    const scrollAmount = rowRef.current.clientWidth;
+    rowRef.current.scrollBy({ left: dir === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
   }
 
   return (
@@ -51,7 +51,7 @@ export default function ContentRow({ tier, count, sort, onSortChange, children, 
               </button>
             </div>
           )}
-          {count > 3 && (
+          {count > 0 && (
             <div className="flex gap-1">
               <button
                 onClick={() => scroll("left")}
