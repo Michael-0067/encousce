@@ -136,7 +136,7 @@ export async function POST(req: NextRequest) {
       n: 1,
     });
 
-    const tempUrl = imageResult.data[0]?.url;
+    const tempUrl = imageResult.data?.[0]?.url;
     if (tempUrl) {
       // Download and store as base64 to avoid URL expiry
       const imgRes = await fetch(tempUrl);
